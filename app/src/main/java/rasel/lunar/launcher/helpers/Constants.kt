@@ -34,11 +34,12 @@ internal class Constants {
     @JvmField val SHARED_PREF_TEMP_UNIT = "temp_unit"
     @JvmField val SHARED_PREF_SHOW_CITY = "show_city"
     @JvmField val SHARED_PREF_SHOW_TODOS = "show_todos"
+    @JvmField val SHARED_PREF_TODO_LOCK = "todo_lock"
     @JvmField val SHARED_PREF_FEED_URL = "feed_url"
     @JvmField val SHARED_PREF_LOCK = "lock"
     @JvmField val SHARED_PREF_THEME = "app_theme"
 
-    @JvmField val DEFAULT_DATE_FORMAT = "EEE dx MMM',' yyyy"
+    @JvmField val DEFAULT_DATE_FORMAT = "EEE dx MMM, yyyy"
     @JvmField val MODAL_BOTTOM_SHEET_TAG = "rasel.lunar.launcher.TAG"
     @JvmField val ACCESSIBILITY_SERVICE_LOCK_SCREEN = "rasel.lunar.launcher.SERVICE_LOCK_SCREEN"
     @JvmField val AUTHENTICATOR_TYPE = BIOMETRIC_WEAK or DEVICE_CREDENTIAL

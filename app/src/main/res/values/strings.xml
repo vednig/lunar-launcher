@@ -6,6 +6,7 @@
     </string>
     <string name="accessibility_service_label">Lock Service</string>
     <string name="add_new">Add New</string>
+    <string name="advance">Advance</string>
     <string name="app_info">App Info</string>
     <string name="app_store">App Store</string>
     <string name="application_theme">Application Theme</string>
@@ -23,6 +24,8 @@
     <string name="developer_name">Developed by: Md Rasel Hossain</string>
     <string name="device_admin">Device Admin</string>
     <string name="device_admin_description">Allow to use double tap to lock feature</string>
+    <string name="donate">Donate</string>
+    <string name="donate_message">This application is free to use, but please consider donating to help and encourage the developer.</string>
     <string name="double_tap_lock">Double Tap Lock</string>
     <string name="empty_text_field">Text field is empty</string>
     <string name="fahrenheit">Fahrenheit</string>
@@ -38,6 +41,10 @@
     <string name="null_app_store_message">There\'s no app store is installed\non this device.</string>
     <string name="owm_key">OWM API Key</string>
     <string name="positive">Positive</string>
+    <string name="proceed">Proceed</string>
+    <string name="reset">Reset</string>
+    <string name="reset_message">This operation will clear all the data stored for this application, and can\'t be undone.</string>
+    <string name="restart">Restart</string>
     <string name="root">Root</string>
     <string name="show_city">Show City</string>
     <string name="show_todos">Show Todos</string>
@@ -46,6 +53,7 @@
     <string name="time_format">Time Format</string>
     <string name="todo">Todo</string>
     <string name="todo_manager">Todo Manager</string>
+    <string name="todo_manager_lock">Todo Manager Lock</string>
     <string name="twelve">12 Hour</string>
     <string name="twenty_four">24 Hour</string>
     <string name="uninstall">Uninstall</string>
