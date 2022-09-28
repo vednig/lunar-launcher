@@ -79,20 +79,17 @@ internal class AccessUtils(
             audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, value.toInt(), 0)
         })
 
-        try {
-            if (Settings.Global.getInt(fragmentActivity.contentResolver, "zen_mode") == 0) {
-                notifyBar.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
-                    audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, value.toInt(), 0)
-                })
-                ringerBar.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
-                    audioManager.setStreamVolume(AudioManager.STREAM_RING, value.toInt(), 0)
-                })
-            } else {
-                notifyBar.isEnabled = false
-                ringerBar.isEnabled = false
-            }
-        } catch (exception: Exception) {
-            exception.printStackTrace()
+        if (Settings.Global.getInt(fragmentActivity.contentResolver, "zen_mode") == 0 &&
+            audioManager.ringerMode != AudioManager.RINGER_MODE_SILENT) {
+            notifyBar.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
+                audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, value.toInt(), 0)
+            })
+            ringerBar.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
+                audioManager.setStreamVolume(AudioManager.STREAM_RING, value.toInt(), 0)
+            })
+        } else {
+            notifyBar.isEnabled = false
+            ringerBar.isEnabled = false
         }
     }
 
@@ -221,7 +218,7 @@ internal class AccessUtils(
         dialogBinding.cancel.setOnClickListener { dialog.dismiss() }
         dialogBinding.ok.setOnClickListener {
             val intentString = Objects.requireNonNull(dialogBinding.inputField.text).toString().trim { it <= ' ' }
-            val thumbLetter = Objects.requireNonNull(dialogBinding.thumbField.text).toString().trim { it <= ' ' }
+            val thumbLetter = Objects.requireNonNull(dialogBinding.thumbField.text).toString().trim { it <= ' ' }.uppercase()
             val color = Objects.requireNonNull(dialogBinding.colorPicker.colorInput.text).toString().trim { it <= ' ' }
 
             if (shortcutType.isNotEmpty() && intentString.isNotEmpty() && thumbLetter.isNotEmpty() && color.isNotEmpty()) {
