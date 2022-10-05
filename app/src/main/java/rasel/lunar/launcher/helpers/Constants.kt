@@ -35,6 +35,7 @@ internal class Constants {
     @JvmField val SHARED_PREF_SHOW_CITY = "show_city"
     @JvmField val SHARED_PREF_SHOW_TODOS = "show_todos"
     @JvmField val SHARED_PREF_TODO_LOCK = "todo_lock"
+    @JvmField val SHARED_PREF_AUTO_KEYBOARD = "automatic_keyboard"
     @JvmField val SHARED_PREF_FEED_URL = "feed_url"
     @JvmField val SHARED_PREF_LOCK = "lock"
     @JvmField val SHARED_PREF_THEME = "app_theme"
@@ -44,13 +45,10 @@ internal class Constants {
     @JvmField val ACCESSIBILITY_SERVICE_LOCK_SCREEN = "rasel.lunar.launcher.SERVICE_LOCK_SCREEN"
     @JvmField val AUTHENTICATOR_TYPE = BIOMETRIC_WEAK or DEVICE_CREDENTIAL
 
-    @JvmField val SHARED_PREFS_PHONES_URLS = "rasel.lunar.launcher.PHONES&URLS"
-    @JvmField val PHONE_NO = "Phone No"
-    @JvmField val PHONE_NO_ = "phone_no_"
-    @JvmField val PHONE_THUMB_LETTER_ = "phone_thumb_letter_"
-    @JvmField val URL_ADDRESS = "Url Address"
-    @JvmField val URL_NO_ = "url_no_"
-    @JvmField val URL_THUMB_LETTER_ = "url_thumb_letter_"
+    @JvmField val SHARED_PREFS_SHORTCUTS = "rasel.lunar.launcher.SHORTCUTS"
+    @JvmField val SHORTCUT_NO_ = "shortcut_no_"
+    @JvmField val TYPE_URL = "shortcut_type_url"
+    @JvmField val TYPE_PHONE = "shortcut_type_phone"
 
     @JvmField val SHARED_PREFS_FAV_APPS = "rasel.lunar.launcher.FAVOURITES"
     @JvmField val FAV_APP_ = "fav_app_"

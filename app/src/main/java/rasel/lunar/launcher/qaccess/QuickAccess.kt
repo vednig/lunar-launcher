@@ -19,40 +19,39 @@
 package rasel.lunar.launcher.qaccess
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.textview.MaterialTextView
+import rasel.lunar.launcher.LauncherActivity
+import rasel.lunar.launcher.R
 import rasel.lunar.launcher.databinding.QuickAccessBinding
 import rasel.lunar.launcher.helpers.Constants
 
 internal class QuickAccess : BottomSheetDialogFragment() {
     private lateinit var binding: QuickAccessBinding
+    private lateinit var fragmentActivity: FragmentActivity
     private lateinit var accessUtils: AccessUtils
-    private lateinit var packageOne: String
-    private lateinit var packageTwo: String
-    private lateinit var packageThree: String
-    private lateinit var packageFour: String
-    private lateinit var packageFive: String
-    private lateinit var packageSix: String
-    private lateinit var phoneNumOne: String
-    private lateinit var phoneNumTwo: String
-    private lateinit var phoneNumThree: String
-    private lateinit var thumbPhoneOne: String
-    private lateinit var thumbPhoneTwo: String
-    private lateinit var thumbPhoneThree: String
-    private lateinit var urlStringOne: String
-    private lateinit var urlStringTwo: String
-    private lateinit var urlStringThree: String
-    private lateinit var thumbUrlOne: String
-    private lateinit var thumbUrlTwo: String
-    private lateinit var thumbUrlThree: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = QuickAccessBinding.inflate(inflater, container, false)
-        accessUtils = AccessUtils(requireContext(), this, requireActivity())
 
+        fragmentActivity = if (isAdded) {
+            requireActivity()
+        } else {
+            LauncherActivity()
+        }
+
+        accessUtils = AccessUtils(requireContext(), this, fragmentActivity)
         favApps()
         accessUtils.controlBrightness(binding.brightness)
         accessUtils.volumeControllers(binding.notification, binding.alarm, binding.media, binding.voice, binding.ring)
@@ -62,46 +61,64 @@ internal class QuickAccess : BottomSheetDialogFragment() {
 
     private fun favApps() {
         val prefsFavApps = requireContext().getSharedPreferences(Constants().SHARED_PREFS_FAV_APPS, Context.MODE_PRIVATE)
-        packageOne = prefsFavApps.getString(Constants().FAV_APP_ + 1, "").toString()
-        packageTwo = prefsFavApps.getString(Constants().FAV_APP_ + 2, "").toString()
-        packageThree = prefsFavApps.getString(Constants().FAV_APP_ + 3, "").toString()
-        packageFour = prefsFavApps.getString(Constants().FAV_APP_ + 4, "").toString()
-        packageFive = prefsFavApps.getString(Constants().FAV_APP_ + 5, "").toString()
-        packageSix = prefsFavApps.getString(Constants().FAV_APP_ + 6, "").toString()
-
-        accessUtils.favApps(packageOne, binding.appOne, 1)
-        accessUtils.favApps(packageTwo, binding.appTwo, 2)
-        accessUtils.favApps(packageThree, binding.appThree, 3)
-        accessUtils.favApps(packageFour, binding.appFour, 4)
-        accessUtils.favApps(packageFive, binding.appFive, 5)
-        accessUtils.favApps(packageSix, binding.appSix, 6)
+        for (position in 1..6) {
+            val packageValue = prefsFavApps.getString(Constants().FAV_APP_ + position.toString(), "").toString()
+            accessUtils.favApps(packageValue, imageView(), position)
+        }
     }
 
-    private fun favPhoneAndUrls() {
-        val prefsPhonesAndUrls = requireContext().getSharedPreferences(Constants().SHARED_PREFS_PHONES_URLS, Context.MODE_PRIVATE)
-        phoneNumOne = prefsPhonesAndUrls.getString(Constants().PHONE_NO_ + 1, "").toString()
-        phoneNumTwo = prefsPhonesAndUrls.getString(Constants().PHONE_NO_ + 2, "").toString()
-        phoneNumThree = prefsPhonesAndUrls.getString(Constants().PHONE_NO_ + 3, "").toString()
-        thumbPhoneOne = prefsPhonesAndUrls.getString(Constants().PHONE_THUMB_LETTER_ + 1, "").toString()
-        thumbPhoneTwo = prefsPhonesAndUrls.getString(Constants().PHONE_THUMB_LETTER_ + 2, "").toString()
-        thumbPhoneThree = prefsPhonesAndUrls.getString(Constants().PHONE_THUMB_LETTER_ + 3, "").toString()
-        urlStringOne = prefsPhonesAndUrls.getString(Constants().URL_NO_ + 1, "").toString()
-        urlStringTwo = prefsPhonesAndUrls.getString(Constants().URL_NO_ + 2, "").toString()
-        urlStringThree = prefsPhonesAndUrls.getString(Constants().URL_NO_ + 3, "").toString()
-        thumbUrlOne = prefsPhonesAndUrls.getString(Constants().URL_THUMB_LETTER_ + 1, "").toString()
-        thumbUrlTwo = prefsPhonesAndUrls.getString(Constants().URL_THUMB_LETTER_ + 2, "").toString()
-        thumbUrlThree = prefsPhonesAndUrls.getString(Constants().URL_THUMB_LETTER_ + 3, "").toString()
+    private fun shortcuts() {
+        val prefsShortcuts = requireContext().getSharedPreferences(Constants().SHARED_PREFS_SHORTCUTS, Context.MODE_PRIVATE)
+        for (position in 1..6) {
+            val shortcutValue = prefsShortcuts.getString(Constants().SHORTCUT_NO_ + position.toString(), "").toString()
+            val splitShortcutValue = shortcutValue.split("||").toTypedArray()
 
-        accessUtils.phonesAndUrls(Constants().URL_ADDRESS, urlStringOne, thumbUrlOne, binding.urlOne, 1)
-        accessUtils.phonesAndUrls(Constants().URL_ADDRESS, urlStringTwo, thumbUrlTwo, binding.urlTwo, 2)
-        accessUtils.phonesAndUrls(Constants().URL_ADDRESS, urlStringThree, thumbUrlThree, binding.urlThree, 3)
-        accessUtils.phonesAndUrls(Constants().PHONE_NO, phoneNumOne, thumbPhoneOne, binding.phoneOne, 1)
-        accessUtils.phonesAndUrls(Constants().PHONE_NO, phoneNumTwo, thumbPhoneTwo, binding.phoneTwo, 2)
-        accessUtils.phonesAndUrls(Constants().PHONE_NO, phoneNumThree, thumbPhoneThree, binding.phoneThree, 3)
+            var shortcutType = ""
+            var intentString = ""
+            var thumbLetter = ""
+            var color = ""
+            try {
+                shortcutType = splitShortcutValue[0]
+                intentString = splitShortcutValue[1]
+                thumbLetter = splitShortcutValue[2]
+                color = splitShortcutValue[3]
+            } catch (exception : Exception) {
+                exception.printStackTrace()
+            }
+
+            accessUtils.shortcutsUtil(textView(), shortcutType, intentString, thumbLetter, color, position)
+        }
+    }
+
+    private fun imageView() : AppCompatImageView {
+        val imageView = AppCompatImageView(fragmentActivity)
+        imageView.layoutParams = LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT,
+            LinearLayoutCompat.LayoutParams.MATCH_PARENT, 1F)
+        binding.favAppsGroup.addView(imageView)
+        return imageView
+    }
+
+    private fun textView() : MaterialTextView {
+        val relativeLayout = RelativeLayout(fragmentActivity)
+        relativeLayout.layoutParams = LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT,
+            LinearLayoutCompat.LayoutParams.WRAP_CONTENT, 1F)
+        relativeLayout.gravity = Gravity.CENTER
+        binding.shortcutsGroup.addView(relativeLayout)
+
+        val textView = MaterialTextView(fragmentActivity)
+        textView.layoutParams = LinearLayoutCompat.LayoutParams((54 * resources.displayMetrics.density).toInt(),
+            (54 * resources.displayMetrics.density).toInt())
+        textView.gravity = Gravity.CENTER
+        textView.textSize = 20 * resources.displayMetrics.density
+        textView.setTypeface(null, Typeface.BOLD)
+        textView.background = ContextCompat.getDrawable(requireContext(), R.drawable.rounded_bg)
+        relativeLayout.addView(textView)
+        return textView
     }
 
     override fun onResume() {
         super.onResume()
-        favPhoneAndUrls()
+        binding.shortcutsGroup.removeAllViews()
+        shortcuts()
     }
 }
