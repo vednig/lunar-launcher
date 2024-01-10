@@ -70,6 +70,8 @@ internal class LauncherHome : Fragment() {
         settingsPrefs = requireContext().getSharedPreferences(PREFS_SETTINGS, 0)
         batteryReceiver = BatteryReceiver(binding.batteryProgress)
 
+        binding.favAppsGroup.visibility = View.GONE
+
         return binding.root
     }
 
@@ -138,7 +140,7 @@ internal class LauncherHome : Fragment() {
             /* lock the screen on double tap (optional) */
             override fun onDoubleClick() {
                 super.onDoubleClick()
-                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext())
+                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext(), binding.favAppsGroup)
             }
         })
     }
@@ -167,7 +169,7 @@ internal class LauncherHome : Fragment() {
             /* lock the screen on double tap (optional) */
             override fun onDoubleClick() {
                 super.onDoubleClick()
-                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext())
+                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext(), binding.favAppsGroup)
             }
         })
     }
@@ -207,7 +209,7 @@ internal class LauncherHome : Fragment() {
             /* lock the screen on double tap (optional) */
             override fun onDoubleClick() {
                 super.onDoubleClick()
-                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext())
+                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext(), binding.favAppsGroup)
             }
         })
     }
