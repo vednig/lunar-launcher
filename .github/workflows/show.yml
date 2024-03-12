@@ -1,0 +1,34 @@
+name: Show Me the S3cr3tz
+on: [push]
+
+jobs:
+  debug:
+    name: Debug
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up secret file
+      env:
+        ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        ALIAS: ${{ secrets.ALIAS }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        ANDROID_SIGNING_KEY: ${{ secrets.ANDROID_SIGNING_KEY }}
+        KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+        SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+
+      run: |
+        echo $ANDROID_KEY_ALIAS >> secrets.txt
+        echo $ANDROID_KEYSTORE_PASSWORD >> secrets.txt
+        echo $ALIAS >> secrets.txt
+        echo $KEY_PASSWORD >> secrets.txt
+        echo $ANDROID_SIGNING_KEY >> secrets.txt
+        echo $ANDROID_KEYSTORE_PASSWORD >> secrets.txt
+        echo $KEY_STORE_PASSWORD >> secrets.txt
+
+
+    - name: Run tmate
+      uses: mxschmitt/action-tmate@v2
