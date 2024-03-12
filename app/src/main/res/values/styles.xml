@@ -2,7 +2,8 @@
 <resources>
     <style name="Theme.LunarLauncher.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/ic_launcher_primary</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
         <item name="postSplashScreenTheme">@style/Theme.LunarLauncher</item>
     </style>
 
@@ -14,6 +15,7 @@
 
     <style name="BottomSheetDialog" parent="Theme.Material3.DayNight.BottomSheetDialog">
         <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
     </style>
 
     <style name="SettingsNavBar">

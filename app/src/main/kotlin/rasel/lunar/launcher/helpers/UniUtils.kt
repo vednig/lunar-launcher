@@ -21,21 +21,34 @@ package rasel.lunar.launcher.helpers
 import android.annotation.SuppressLint
 import android.app.admin.DevicePolicyManager
 import android.content.*
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.TypedValue
+import android.view.View
 import android.view.WindowInsets
 import android.widget.Toast
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
 import androidx.biometric.BiometricPrompt
+import androidx.core.view.isVisible
+import com.google.android.material.imageview.ShapeableImageView
 import rasel.lunar.launcher.LauncherActivity.Companion.lActivity
 import rasel.lunar.launcher.R
+import rasel.lunar.launcher.apps.IconPackManager.Companion.getDrawableIconForPackage
 import rasel.lunar.launcher.helpers.Constants.Companion.ACCESSIBILITY_SERVICE_LOCK_SCREEN
 import rasel.lunar.launcher.helpers.Constants.Companion.AUTHENTICATOR_TYPE
+import rasel.lunar.launcher.helpers.Constants.Companion.DEFAULT_ICON_SIZE
+import rasel.lunar.launcher.helpers.Constants.Companion.KEY_APPS_LAYOUT
+import rasel.lunar.launcher.helpers.Constants.Companion.KEY_APP_NO_
+import rasel.lunar.launcher.helpers.Constants.Companion.KEY_ICON_SIZE
+import rasel.lunar.launcher.helpers.Constants.Companion.MAX_FAVORITE_APPS
+import rasel.lunar.launcher.helpers.Constants.Companion.PREFS_FAVORITE_APPS
+import rasel.lunar.launcher.helpers.Constants.Companion.PREFS_SETTINGS
 import java.io.DataOutputStream
 
 
@@ -92,8 +105,9 @@ internal class UniUtils {
         }
 
         /* lock using preferred method */
-        fun lockMethod(lockMethodValue: Int, context: Context) {
+        fun lockMethod(lockMethodValue: Int, context: Context, linearLayoutCompat: LinearLayoutCompat) {
             when (lockMethodValue) {
+                0 -> populateFavApps(context, linearLayoutCompat)
                 1 -> lockAccessibility()
                 2 -> lockDeviceAdmin(context)
                 3 -> lockRoot()
@@ -151,6 +165,9 @@ internal class UniUtils {
             return typedValue.resourceId
         }
 
+        /* convert dp value to px */
+        fun dpToPx(context: Context, id: Int) : Int = (context.resources.getDimension(id) * context.resources.displayMetrics.density).toInt()
+
         /* lock screen using device admin */
         private fun lockDeviceAdmin(context: Context) {
             val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -170,6 +187,47 @@ internal class UniUtils {
                         )
                     )
                     exception.printStackTrace()
+                }
+            }
+        }
+
+        /* favorite apps */
+        private fun populateFavApps(context: Context, linearLayoutCompat: LinearLayoutCompat) {
+            val prefsFavApps = context.getSharedPreferences(PREFS_FAVORITE_APPS, 0)
+            if (linearLayoutCompat.isVisible || prefsFavApps.all.toString().length < 3) {
+                linearLayoutCompat.visibility = View.GONE
+            } else {
+                linearLayoutCompat.removeAllViews()
+                linearLayoutCompat.visibility = View.VISIBLE
+                val iconSize = context.getSharedPreferences(PREFS_SETTINGS, 0).getInt(KEY_ICON_SIZE, DEFAULT_ICON_SIZE)
+
+                for (position in 1..MAX_FAVORITE_APPS) {
+                    val packageName = prefsFavApps.getString(KEY_APP_NO_ + position.toString(), "").toString()
+                    /* package name is not empty for a specific position */
+                    if (packageName.isNotEmpty()) {
+                        try {
+                            ShapeableImageView(context).apply {
+                                layoutParams = LinearLayoutCompat.LayoutParams(
+                                    (iconSize * resources.displayMetrics.density).toInt(),
+                                    (iconSize * resources.displayMetrics.density).toInt(), 1F)
+                            }.let { sImageView ->
+                                context.packageManager.getApplicationIcon(packageName).let { defaultIcon ->
+                                    sImageView.setImageDrawable(
+                                        if (context.getSharedPreferences(PREFS_SETTINGS, 0).getInt(KEY_APPS_LAYOUT, 0) != 0)
+                                            getDrawableIconForPackage(packageName, defaultIcon)
+                                        else defaultIcon
+                                    )
+                                }
+                                sImageView.setOnClickListener {
+                                    context.startActivity(context.packageManager.getLaunchIntentForPackage(packageName))
+                                }
+                                linearLayoutCompat.addView(sImageView)
+                            }
+                        } catch (nameNotFoundException: PackageManager.NameNotFoundException) {
+                            context.getSharedPreferences(PREFS_FAVORITE_APPS, 0)
+                                .edit().remove(KEY_APP_NO_ + position).apply()
+                        }
+                    }
                 }
             }
         }

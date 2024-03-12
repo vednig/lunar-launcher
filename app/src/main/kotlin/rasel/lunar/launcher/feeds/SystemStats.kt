@@ -41,7 +41,6 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.io.RandomAccessFile
-import java.net.InetAddress
 import java.net.NetworkInterface
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -139,18 +138,18 @@ internal class SystemStats {
         /* sd card is available */
         if (extStorages.size > 1) {
             extParent.removeAllViews()
-            for (i in 1 until extStorages.size) {
-                if (extStorages[i] != null) {
+            for (extStorage in extStorages) {
+                if (extStorage != null) {
                     val binding = ChildSysInfoBinding.inflate(inflater)
                     extParent.addView(binding.root)
 
-                    val statFs = StatFs(extStorages[i]!!.path)
+                    val statFs = StatFs(extStorage.path)
                     val blockSize = statFs.blockSizeLong
                     val totalStorage = statFs.blockCountLong * blockSize / toGb
                     val availStorage = statFs.availableBlocksLong * blockSize / toGb
                     val usedStorage = totalStorage - availStorage
 
-                    val sdcardPaths = extStorages[i]!!.path.split(File.separator).toTypedArray()
+                    val sdcardPaths = extStorage.path.split(File.separator).toTypedArray()
                     val sdPath = File.separator + sdcardPaths[1] + File.separator + sdcardPaths[2] + File.separator
 
                     binding.indicator.progress = (usedStorage * 100 / totalStorage).toInt()
@@ -274,10 +273,8 @@ internal class SystemStats {
 
     private fun getIpAddress(getIPv4: Boolean): String {
         try {
-            val interfaces: List<NetworkInterface> = Collections.list(NetworkInterface.getNetworkInterfaces())
-            for (interFace in interfaces) {
-                val addresses: List<InetAddress> = Collections.list(interFace.inetAddresses)
-                for (address in addresses) {
+            for (interFace in Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                for (address in Collections.list(interFace.inetAddresses)) {
                     if (!address.isLoopbackAddress) {
                         val addressStr = address.hostAddress
                         val isIPv4 = addressStr!!.indexOf(':') < 0

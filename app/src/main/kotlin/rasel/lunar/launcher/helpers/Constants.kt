@@ -47,9 +47,14 @@ internal class Constants {
         const val KEY_TODO_LOCK = "todo_lock"
         const val KEY_KEYBOARD_SEARCH = "keyboard_search"
         const val KEY_QUICK_LAUNCH = "quick_launch"
+        const val KEY_APPS_LAYOUT = "apps_layout"
+        const val KEY_APPS_COUNT = "apps_count"
         const val KEY_DRAW_ALIGN = "drawer_alignment"
+        const val KEY_ICON_PACK = "icon_pack"
+        const val KEY_GRID_COLUMNS = "grid_columns"
         const val KEY_SCROLLBAR_HEIGHT = "scrollbar_height"
         const val KEY_WINDOW_BACKGROUND = "window_background"
+        const val KEY_APPLICATION_THEME = "application_theme"
         const val KEY_STATUS_BAR = "status_bar"
         const val KEY_BACK_HOME = "back_home"
         const val KEY_SHORTCUT_COUNT = "shortcut_count"
@@ -60,6 +65,8 @@ internal class Constants {
         /* --- */
         const val DEFAULT_DATE_FORMAT = "EEE dx MMM, yyyy"
         const val DEFAULT_ICON_SIZE = 44
+        const val DEFAULT_ICON_PACK = "default_icon_pack"
+        const val DEFAULT_GRID_COLUMNS = 4
         const val DEFAULT_SCROLLBAR_HEIGHT = 400
         const val MAX_SHORTCUTS = 6
         const val MAX_FAVORITE_APPS = 6
@@ -74,6 +81,9 @@ internal class Constants {
         const val requestPickWidget = 103
         const val requestCreateWidget = 104
 
+        /* app names */
+        const val PREFS_APP_NAMES = "rasel.lunar.launcher.APP_NAMES"
+
         /* favorite apps */
         const val PREFS_FAVORITE_APPS = "rasel.lunar.launcher.FAVORITE_APPS"
         const val KEY_APP_NO_ = "app_no_"
@@ -84,7 +94,7 @@ internal class Constants {
         const val SHORTCUT_TYPE_URL = "shortcut_type_url"
         const val SHORTCUT_TYPE_PHONE = "shortcut_type_phone"
 
-        /* todo database */
+        /* to-do database */
         const val TODO_DATABASE_NAME = "rasel.lunar.launcher.TODOS"
         const val TODO_DATABASE_VERSION = 1
         const val TODO_TABLE_NAME = "todo_table"

@@ -37,7 +37,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -52,19 +51,15 @@ import rasel.lunar.launcher.databinding.QuickAccessBinding
 import rasel.lunar.launcher.databinding.ShortcutMakerBinding
 import rasel.lunar.launcher.helpers.ColorPicker
 import rasel.lunar.launcher.helpers.Constants.Companion.DEFAULT_ICON_SIZE
-import rasel.lunar.launcher.helpers.Constants.Companion.KEY_APP_NO_
 import rasel.lunar.launcher.helpers.Constants.Companion.KEY_ICON_SIZE
 import rasel.lunar.launcher.helpers.Constants.Companion.KEY_SHORTCUT_COUNT
 import rasel.lunar.launcher.helpers.Constants.Companion.KEY_SHORTCUT_NO_
-import rasel.lunar.launcher.helpers.Constants.Companion.MAX_FAVORITE_APPS
 import rasel.lunar.launcher.helpers.Constants.Companion.MAX_SHORTCUTS
-import rasel.lunar.launcher.helpers.Constants.Companion.PREFS_FAVORITE_APPS
 import rasel.lunar.launcher.helpers.Constants.Companion.PREFS_SETTINGS
 import rasel.lunar.launcher.helpers.Constants.Companion.PREFS_SHORTCUTS
 import rasel.lunar.launcher.helpers.Constants.Companion.SEPARATOR
 import rasel.lunar.launcher.helpers.Constants.Companion.SHORTCUT_TYPE_PHONE
 import rasel.lunar.launcher.helpers.Constants.Companion.SHORTCUT_TYPE_URL
-import rasel.lunar.launcher.helpers.PrefsUtil.Companion.removeFavApps
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -98,7 +93,6 @@ internal class QuickAccess : BottomSheetDialogFragment() {
         super.onResume()
         /* repopulate shortcuts and apps */
         shortcuts()
-        favApps()
     }
 
     /* control the volumes */
@@ -212,21 +206,6 @@ internal class QuickAccess : BottomSheetDialogFragment() {
                 Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, value.toInt())
             }
         })
-    }
-
-    /* set up favorite apps */
-    private fun favApps() {
-        binding.favAppsGroup.removeAllViews()
-        val prefsFavApps = requireContext().getSharedPreferences(PREFS_FAVORITE_APPS, 0)
-        if (prefsFavApps.all.toString().length < 3) {
-            binding.favAppsGroup.visibility = View.GONE
-        } else {
-            binding.favAppsGroup.visibility = View.VISIBLE
-            for (position in 1..MAX_FAVORITE_APPS) {
-                val packageValue = prefsFavApps.getString(KEY_APP_NO_ + position.toString(), "").toString()
-                favApp(packageValue, imageView, position)
-            }
-        }
     }
 
     /* contact/url shortcuts */
@@ -358,34 +337,6 @@ internal class QuickAccess : BottomSheetDialogFragment() {
         }
     }
 
-    /* favorite apps */
-    private fun favApp(packageName: String, imageView: AppCompatImageView, position: Int) {
-        val packageManager = requireContext().packageManager
-        /* package name is not empty for a specific position */
-        if (packageName.isNotEmpty()) {
-            try {
-                /* show app icon */
-                imageView.setImageDrawable(packageManager.getApplicationIcon(packageName))
-                /* on click - open app */
-                imageView.setOnClickListener {
-                    requireContext().startActivity(packageManager.getLaunchIntentForPackage(packageName))
-                    this.dismiss()
-                }
-                /* on long click - remove from favorite apps */
-                imageView.setOnLongClickListener {
-                    removeFavApps(position)
-                    this.onResume()
-                    true
-                }
-            } catch (nameNotFoundException: PackageManager.NameNotFoundException) {
-                removeFavApps(position)
-                imageView.visibility = View.GONE
-            }
-        } else {
-            imageView.visibility = View.GONE
-        }
-    }
-
     /* create text view for shortcut thumbnails */
     private val textView: MaterialTextView get() {
         val relativeLayout = RelativeLayout(lActivity!!)
@@ -407,18 +358,6 @@ internal class QuickAccess : BottomSheetDialogFragment() {
             background = ContextCompat.getDrawable(requireContext(), R.drawable.rounded_bg)
         }.let {
             relativeLayout.addView(it)
-            return it
-        }
-    }
-
-    /* create image view for favorite app icons */
-    private val imageView: AppCompatImageView get() {
-        AppCompatImageView(requireContext()).apply {
-            layoutParams = LinearLayoutCompat.LayoutParams(
-                (iconSize * resources.displayMetrics.density).toInt(),
-                (iconSize * resources.displayMetrics.density).toInt(), 1F)
-        }.let {
-            binding.favAppsGroup.addView(it)
             return it
         }
     }

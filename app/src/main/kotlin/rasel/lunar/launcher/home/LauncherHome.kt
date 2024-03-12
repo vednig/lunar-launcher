@@ -23,6 +23,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.provider.AlarmClock
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
@@ -68,6 +69,8 @@ internal class LauncherHome : Fragment() {
         fragManager = lActivity!!.supportFragmentManager
         settingsPrefs = requireContext().getSharedPreferences(PREFS_SETTINGS, 0)
         batteryReceiver = BatteryReceiver(binding.batteryProgress)
+
+        binding.favAppsGroup.visibility = View.GONE
 
         return binding.root
     }
@@ -137,7 +140,7 @@ internal class LauncherHome : Fragment() {
             /* lock the screen on double tap (optional) */
             override fun onDoubleClick() {
                 super.onDoubleClick()
-                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext())
+                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext(), binding.favAppsGroup)
             }
         })
     }
@@ -146,6 +149,13 @@ internal class LauncherHome : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun batteryProgressGestures() {
         binding.batteryProgress.setOnTouchListener(object : SwipeTouchListener(requireContext()) {
+            /* open alarms list with default clock app */
+            override fun onClick() {
+                super.onClick()
+                requireContext().startActivity(
+                    Intent(AlarmClock.ACTION_SHOW_ALARMS).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            }
             /* open settings activity on long click */
             override fun onLongClick() {
                 super.onLongClick()
@@ -159,7 +169,7 @@ internal class LauncherHome : Fragment() {
             /* lock the screen on double tap (optional) */
             override fun onDoubleClick() {
                 super.onDoubleClick()
-                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext())
+                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext(), binding.favAppsGroup)
             }
         })
     }
@@ -199,7 +209,7 @@ internal class LauncherHome : Fragment() {
             /* lock the screen on double tap (optional) */
             override fun onDoubleClick() {
                 super.onDoubleClick()
-                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext())
+                lockMethod(settingsPrefs.getInt(KEY_LOCK_METHOD, 0), requireContext(), binding.favAppsGroup)
             }
         })
     }

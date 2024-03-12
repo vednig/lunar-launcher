@@ -32,11 +32,14 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -44,6 +47,7 @@ import rasel.lunar.launcher.apps.AppDrawer
 import rasel.lunar.launcher.databinding.LauncherActivityBinding
 import rasel.lunar.launcher.feeds.Feeds
 import rasel.lunar.launcher.feeds.WidgetHost
+import rasel.lunar.launcher.helpers.Constants.Companion.KEY_APPLICATION_THEME
 import rasel.lunar.launcher.helpers.Constants.Companion.KEY_BACK_HOME
 import rasel.lunar.launcher.helpers.Constants.Companion.KEY_FIRST_LAUNCH
 import rasel.lunar.launcher.helpers.Constants.Companion.KEY_STATUS_BAR
@@ -71,7 +75,14 @@ internal class LauncherActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         DynamicColors.applyToActivityIfAvailable(this)
+
+        settingsPrefs = getSharedPreferences(PREFS_SETTINGS, 0)
+        AppCompatDelegate.setDefaultNightMode(settingsPrefs.getInt(KEY_APPLICATION_THEME, MODE_NIGHT_FOLLOW_SYSTEM))
+
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        binding = LauncherActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         lActivity = this
         appWidgetManager = AppWidgetManager.getInstance(applicationContext)
@@ -81,13 +92,6 @@ internal class LauncherActivity : AppCompatActivity() {
         /*  if this is the first launch,
             then remember the event and show the welcome dialog */
         welcomeDialog()
-
-        binding = LauncherActivityBinding.inflate(layoutInflater)
-        settingsPrefs = getSharedPreferences(PREFS_SETTINGS, 0)
-
-        /* set up activity's view */
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        setContentView(binding.root)
         setupView()
 
         /* handle navigation back events */
@@ -145,6 +149,7 @@ internal class LauncherActivity : AppCompatActivity() {
                 supportFragmentManager, mutableListOf(Feeds(), LauncherHome(), AppDrawer()), lifecycle)
             offscreenPageLimit = 1
             setCurrentItem(1, false)
+            reduceDragSensitivity()
         }
     }
 
@@ -200,6 +205,19 @@ internal class LauncherActivity : AppCompatActivity() {
                 view.updatePadding(0, topInset, 0, it.bottom)
             }
             WindowInsetsCompat.CONSUMED
+        }
+    }
+
+    private fun ViewPager2.reduceDragSensitivity() {
+        ViewPager2::class.java.getDeclaredField("mRecyclerView").apply {
+            isAccessible = true
+        }.let { recyclerViewField ->
+            (recyclerViewField.get(this) as RecyclerView).let { recyclerView ->
+                RecyclerView::class.java.getDeclaredField("mTouchSlop").apply {
+                    isAccessible = true
+                    set(recyclerView, this.get(recyclerView) as Int * 8)
+                }
+            }
         }
     }
 
