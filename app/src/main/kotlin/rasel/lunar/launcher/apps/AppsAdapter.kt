@@ -115,8 +115,7 @@ internal class AppsAdapter(
 
     /* update app list */
     fun updateData(newList: List<Packages>) {
-        val diffUtil = AppsDiffUtil(oldList, newList)
-        val diffUtilResult = DiffUtil.calculateDiff(diffUtil)
+        val diffUtilResult = DiffUtil.calculateDiff(AppsDiffUtil(oldList, newList))
 
         oldList.clear()
         oldList.addAll(newList)
